@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="">
+<meta name="keywords" content="">
+<meta name="author" content="">
+<title>JSON Example</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+
+<script src="http://code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
+</head>
+
+<body>
+<ul class="menu_container">
+	<li><a href="javascript:void(0);" onClick="myPostFunction()">Posts</a></li>
+	<li><a href="javascript:void(0);" onClick="myXMLFunction()">XML File</a></li>
+	<li><a href="javascript:void(0);" onClick="myAlbum()">Albums</a></li>
+	<li><a href="#">Todos</a></li>
+	<li><a href="#">Users</a></li>
+</ul>
+
+<div id="posts_demo">
+	<h3>Here display server file data</h3>	
+</div>
+<div id="xml_demo">
+	<h3>Here display XML data</h3>
+</div>
+<div id="album_demo_2">
+	
+</div>
+<div id="album_demo">
+	<h3>Here display Albums data</h3>
+</div>
+
+
+
+<script type="text/javascript">
+// Server File Data
+function myPostFunction(){	
+	// Posts
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function (){
+		if(this.readyState === 4 && this.status === 200){			
+			var x = JSON.parse(this.responseText);
+			var tbl = "<table border = '1'><tr><th>ID</th><th>Title</th></tr>";
+			for(var i=0; i<x.length; i++){
+				tbl += "<tr><td>" + x[i].id + "</td><td>" + x[i].title + "</td></tr>";							
+			}
+			tbl += "</table>";
+			document.getElementById('posts_demo').innerHTML = tbl;
+		}		
+	};
+	xhttp.open('GET','https://jsonplaceholder.typicode.com/posts',true);
+	xhttp.send();
+}
+
+// Created XML file & display those data
+function myXMLFunction() {
+	var xhttp, xmlDoc, x, i;
+	
+	xhttp = new XMLHttpRequest();
+	
+	var tbl = "<table border='1' width='300'><tr><th>Title</th><th>Price</th></tr>";
+	xhttp.onreadystatechange = function() {
+	
+	if (this.readyState == 4 && this.status == 200) {
+		  xmlDoc = this.responseXML;		  			  
+		  x = xmlDoc.getElementsByTagName("CD");		  
+		  
+		  for (i = 0; i < x.length; i++) {
+			    tbl += "<tr><td>" + x[i].getElementsByTagName("title")[0].childNodes[0].nodeValue + "</td><td>" + x[i].getElementsByTagName("price")[0].childNodes[0].nodeValue + "</td></tr>";
+		  }
+		  tbl += "</table>";
+		  document.getElementById("xml_demo").innerHTML = tbl;
+	  }
+};
+xhttp.open("GET", "myXmlFile.xml", true);
+xhttp.send();
+}
+// Albums
+function myDetailAlbum(id){
+	var xhttp = new XMLHttpRequest();
+	
+	xhttp.onreadystatechange = function (){
+		if(this.readyState == 4 && this.status == 200){
+			var x = JSON.parse(this.responseText);
+			//console.log(x);
+			
+			var imgPath = '<img src="'+ x[0].url +'" />';				
+			var thumbnailPath = '<img src="' + x[0].thumbnailUrl +'" />';
+			var datainfo = 'https://jsonplaceholder.typicode.com/photos/?id=';
+		
+			var tbl = "<div class=detailinfo>" + "Title : " + x[0].title + "</br>" + "Image :" + imgPath + "<br>" + "Thumnail Image :" + thumbnailPath + "</div>";
+			
+			document.getElementById('album_demo').innerHTML = tbl;
+		}
+	}
+	xhttp.open("GET","https://jsonplaceholder.typicode.com/photos/?id="+id,true);
+	xhttp.send();
+}
+
+function myAlbum(){
+	var xhttp = new XMLHttpRequest();
+	
+	xhttp.onreadystatechange = function (){
+		if(this.readyState == 4 && this.status == 200){
+			var x = JSON.parse(this.responseText);
+			//console.log(x);
+			
+			var tbl = "<table border=1 width=400><tr><th>Title</th><th>Image</th><th>Thumbnail</th></tr>";
+			for (var i=0;i<x.length;i++){
+				var imgPath = '<img src="'+ x[i].url +'" />';
+				var thumbnailPath = '<img src="' + x[i].thumbnailUrl +'" />';				
+				var albumId = x[i].id;
+				
+				tbl += "<tr><td>" + '<div onClick="myDetailAlbum('+albumId+')">' + x[i].title + "</div>" +"</td><td>" + imgPath	 +"</td><td>" + thumbnailPath + "</td></tr>";				
+			}
+			tbl +="</table>";
+			document.getElementById('album_demo').innerHTML = tbl;
+		}
+	}
+	xhttp.open("GET","https://jsonplaceholder.typicode.com/photos",true);
+	xhttp.send();
+}
+</script>
+</body>
+</html>
